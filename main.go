@@ -25,9 +25,11 @@ func main() {
 	today := time.Now().Format("2006/01/02")
 
 	// analyze lbproxy logs
-	uniqUsersMetric := lbproxy.NewUniqUsersMetric()
+	//uniqUsersMetric := lbproxy.NewUniqUsersMetric()
+	syncDistrMetric := lbproxy.NewSyncDistrMetric()
 	pattern := path.Join("/data/log/", today, "box.lbproxy/*/td.var.log.cboxredirectd.cboxredirectd_http.log")
-	metrics := parse(pattern, uniqUsersMetric)
+	//metrics := parse(pattern, uniqUsersMetric, syncDistrMetric)
+	metrics := parse(pattern, syncDistrMetric)
 
 	// send to carbon
 	push(metrics)

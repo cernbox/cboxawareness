@@ -64,6 +64,74 @@ func (uu *UniqUsersMetric) Metrics() map[string]int {
 	return m
 }
 
+type SyncDistrMetric struct {
+	// cernbox.awareness.sync.distr.cbox.2-7-0.windows 123
+	dist map[string]int
+}
+
+func (uu *SyncDistrMetric) Do(data []byte) {
+	l := &line{}
+
+	if err := jsoniter.Unmarshal([]byte(data), l); err != nil {
+		er(err)
+		return
+	}
+
+	agent := strings.ToLower(l.Agent)
+	if !strings.Contains(agent, "mirall") {
+		return
+	}
+
+	// most lines to parse are like these:
+	// 0           1         2            3      4      5
+	// mozilla/5.0 (windows) mirall/2.4.2 (build 1396) (cernbox)
+	// but sometimes line can avoid build info:
+	// 0           1       2            3
+	// mozilla/5.0 (linux) mirall/2.6.3 (cernbox)
+	// mozilla/5.0 (linux) mirall/2.6.4git (nextcloud)
+	tokens := strings.Split(agent, " ")
+
+	os := tokens[1]
+	os = strings.TrimPrefix(os, "(")
+	os = strings.TrimSuffix(os, ")")
+
+	version := strings.ReplaceAll(strings.Split(tokens[2], "/")[1], ".", "-")
+
+	var brand string
+	if len(tokens) == 3 {
+		brand = "owncloud"
+	} else {
+		b := strings.TrimPrefix(tokens[3], "(")
+		if strings.HasPrefix(b, "build") {
+			// check for empty platform, we map to owncloud
+			if len(tokens) < 6 {
+				b = "owncloud"
+			} else {
+				b = strings.TrimSuffix(strings.TrimPrefix(tokens[5], "("), ")")
+			}
+		} else {
+			b = strings.TrimSuffix(b, ")")
+		}
+
+		if b == "" {
+			panic("b is empty")
+		}
+		brand = b
+	}
+
+	uu.dist[fmt.Sprintf("cernbox.awareness.sync.dist.%s.%s.%s", os, version, brand)]++
+}
+
+func NewSyncDistrMetric() *SyncDistrMetric {
+	return &SyncDistrMetric{
+		dist: map[string]int{},
+	}
+}
+
+func (uu *SyncDistrMetric) Metrics() map[string]int {
+	return uu.dist
+}
+
 func er(err error) {
 	fmt.Fprintf(os.Stderr, "error: %+v", err)
 }

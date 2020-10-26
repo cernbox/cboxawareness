@@ -37,7 +37,9 @@ func (uu *UniqUsers) Do(data []byte) {
 		return
 	}
 
-	username := strings.Trim(strings.SplitN(l.Message, "", 1)[0], "")
+	tokens := strings.SplitN(l.Message, " ", 1)
+	fmt.Println(l.Message, tokens)
+	username := tokens[0]
 	uu.dist[username]++
 }
 

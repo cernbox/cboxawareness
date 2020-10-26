@@ -43,7 +43,7 @@ func main() {
 
 	// analyze samba logs
 	uniqSamba := samba.NewUniqUsers()
-	pattern = path.Join("/data/log/", today, "box.samba*/*/td.var.log.samba.smbclient.log")
+	pattern = path.Join("/data/log/", today, "box.samba*/*/td.var.log.samba.smbclients.log")
 	metrics = append(metrics, parse(pattern, uniqSamba)...)
 
 	// send to carbon

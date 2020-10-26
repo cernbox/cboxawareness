@@ -73,7 +73,7 @@ func (uu *UniqUsers) Do(data []byte) {
 }
 
 func NewUniqUsers() *UniqUsers {
-	return &UniqUsers{}
+	return &UniqUsers{dist: map[string]int{}}
 }
 
 func (uu *UniqUsers) Metrics() map[string]int {

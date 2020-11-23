@@ -35,9 +35,9 @@ func main() {
 	uniqUsersMetric := lbproxy.NewUniqUsersMetric()
 	syncDistrMetric := lbproxy.NewSyncDistrMetric()
 	countryMetric := lbproxy.NewCountryMetric()
+	appsMetrics := lbproxy.NewAppsMetric()
 	pattern := path.Join("/data/log/", today, "box.lbproxy/*/td.var.log.cboxredirectd.cboxredirectd_http.log")
-	metrics := parse(pattern, uniqUsersMetric, syncDistrMetric, countryMetric)
-
+	metrics := parse(pattern, uniqUsersMetric, syncDistrMetric, countryMetric, appsMetrics)
 	// analyze revad logs
 	userCreated := revad.NewUserCreated()
 	uniqWeb := revad.NewUniqUsers()

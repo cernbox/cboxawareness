@@ -178,3 +178,48 @@ func NewCountryMetric() *CountryMetric {
 func (uu *CountryMetric) Metrics() map[string]int {
 	return uu.dist
 }
+
+type AppsMetric struct {
+	dist map[string]int
+}
+
+func (uu *AppsMetric) Do(data []byte) {
+	l := &line{}
+
+	if err := jsoniter.Unmarshal([]byte(data), l); err != nil {
+		er(err)
+	}
+
+	if strings.Contains(l.Path, "ajax/loadfile") {
+		uu.dist["apps.usage.text-editor"]++
+	} else if strings.Contains(l.Path, "index.php/apps/wopiviewer/open") {
+		uu.dist["apps.usage.office"]++
+	} else if strings.Contains(l.Path, "index.php/apps/swanviewer/eosinfo") {
+		uu.dist["apps.usage.swan"]++
+	} else if strings.Contains(l.Path, "gantt/?username=") {
+		uu.dist["apps.usage.gantt"]++
+	} else if strings.Contains(l.Path, "index.php/apps/gallery/preview") {
+		uu.dist["apps.usage.gallery"]++
+	} else if strings.Contains(l.Path, "index.php/apps/rootviewer/load") {
+		uu.dist["apps.usage.root"]++
+	} else if strings.Contains(l.Path, "index.php/apps/mailer/sendmail") {
+		uu.dist["apps.usage.sendmail"]++
+	} else if strings.Contains(l.Path, "index.php/apps/files/ajax/download.php") {
+		uu.dist["apps.usage.zipdownload"]++
+	} else if strings.Contains(l.Path, "byoa/drawio/?embed=") {
+		uu.dist["apps.usage.drawio"]++
+	} else if strings.Contains(l.Path, "index.php/apps/onlyoffice/ajax/config") {
+		uu.dist["apps.usage.oo"]++
+	}
+
+}
+
+func NewAppsMetric() *AppsMetric {
+	return &AppsMetric{
+		dist: map[string]int{},
+	}
+}
+
+func (uu *AppsMetric) Metrics() map[string]int {
+	return uu.dist
+}

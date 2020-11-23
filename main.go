@@ -11,17 +11,20 @@ import (
 	"os"
 	"path"
 	"path/filepath"
+	"strings"
 	"time"
 )
 
 var pushFlag bool
 var prefixFlag string
 var carbonServerFlag string
+var pickFlag string
 
 func init() {
 	flag.BoolVar(&pushFlag, "p", false, "push metrics to carbon metrics store")
 	flag.StringVar(&carbonServerFlag, "carbon-server", "filer-carbon.cern.ch:2003", "carbon server")
 	flag.StringVar(&prefixFlag, "prefix", "cernbox.awareness", "carbon metrics prefix")
+	flag.StringVar(&pickFlag, "pick", "", "pick only one file to parse")
 	flag.Parse()
 }
 
@@ -77,6 +80,9 @@ func parse(pattern string, metrics ...Metric) (counters []map[string]int) {
 	}
 
 	for _, f := range files {
+		if pickFlag != "" && !strings.Contains(f, pickFlag) {
+			continue
+		}
 		fd, err := os.Open(f)
 		if err != nil {
 			er(err)

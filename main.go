@@ -14,7 +14,6 @@ import (
 	"strings"
 	"time"
 )
-
 var pushFlag bool
 var prefixFlag string
 var carbonServerFlag string
@@ -48,6 +47,12 @@ func main() {
 	uniqSamba := samba.NewUniqUsers()
 	pattern = path.Join("/data/log/", today, "box.samba*/*/td.var.log.samba.smbclients.log")
 	metrics = append(metrics, parse(pattern, uniqSamba)...)
+
+	// analyze OCIS logs
+	OCISappsMetrics := revad.NewOCISAppsMetric()
+	OCISuniqWeb := revad.NewOCISUniqUsers()
+	pattern = path.Join("/data/log/", today, "box.ocis*/*/td.var.log.revad-gateway.log")
+	metrics = append(metrics, parse(pattern, OCISappsMetrics, OCISuniqWeb)...)
 
 	// send to carbon
 	push(metrics)

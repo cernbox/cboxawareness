@@ -2,10 +2,11 @@ package lbproxy
 
 import (
 	"fmt"
-	"github.com/json-iterator/go"
 	"os"
 	"strings"
 	"time"
+
+	jsoniter "github.com/json-iterator/go"
 )
 
 type line struct {
@@ -190,26 +191,24 @@ func (uu *AppsMetric) Do(data []byte) {
 		er(err)
 	}
 
-	if strings.Contains(l.Path, "ajax/loadfile") {
+	if strings.Contains(l.Path, "/text-editor/") {
 		uu.dist["apps.usage.text-editor"]++
-	} else if strings.Contains(l.Path, "index.php/apps/wopiviewer/open") {
+	} else if strings.Contains(l.Path, "/external/") && strings.Contains(l.Path, "app=MS%20365%20on%20Cloud") {
 		uu.dist["apps.usage.office"]++
-	} else if strings.Contains(l.Path, "index.php/apps/swanviewer/eosinfo") {
+	} else if strings.Contains(l.Path, "/external/") && strings.Contains(l.Path, "app=CodiMD") {
+		uu.dist["apps.usage.codimd"]++
+	} else if strings.Contains(l.Path, "/jupyter/") {
 		uu.dist["apps.usage.swan"]++
-	} else if strings.Contains(l.Path, "gantt/?username=") {
-		uu.dist["apps.usage.gantt"]++
-	} else if strings.Contains(l.Path, "index.php/apps/gallery/preview") {
+	} else if strings.Contains(l.Path, "/preview/") {
 		uu.dist["apps.usage.gallery"]++
-	} else if strings.Contains(l.Path, "index.php/apps/rootviewer/load") {
+	} else if strings.Contains(l.Path, "/rootjs/") {
 		uu.dist["apps.usage.root"]++
-	} else if strings.Contains(l.Path, "index.php/apps/mailer/sendmail") {
+	} else if strings.Contains(l.Path, "/mailer") {
 		uu.dist["apps.usage.sendmail"]++
-	} else if strings.Contains(l.Path, "index.php/apps/files/ajax/download.php") {
+	} else if strings.Contains(l.Path, "/archiver") {
 		uu.dist["apps.usage.zipdownload"]++
-	} else if strings.Contains(l.Path, "byoa/drawio/?embed=") {
+	} else if strings.Contains(l.Path, "/draw-io/") {
 		uu.dist["apps.usage.drawio"]++
-	} else if strings.Contains(l.Path, "index.php/apps/onlyoffice/ajax/config") {
-		uu.dist["apps.usage.oo"]++
 	}
 
 }

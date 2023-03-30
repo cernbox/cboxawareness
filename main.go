@@ -25,6 +25,7 @@ func init() {
 	flag.StringVar(&carbonServerFlag, "carbon-server", "filer-carbon.cern.ch:2003", "carbon server")
 	flag.StringVar(&prefixFlag, "prefix", "cernbox.awareness", "carbon metrics prefix")
 	flag.StringVar(&pickFlag, "pick", "", "pick only one file to parse")
+	flag.StringVar(&pathFlag, "path", "/data/cephfs/logs/", "path where the logs are stored")
 	flag.Parse()
 }
 
@@ -36,17 +37,17 @@ func main() {
 	syncDistrMetric := lbproxy.NewSyncDistrMetric()
 	countryMetric := lbproxy.NewCountryMetric()
 	appsMetrics := lbproxy.NewAppsMetric()
-	pattern := path.Join("/data/log/", today, "box.lbproxy/*/td.var.log.cboxredirectd.cboxredirectd_http.log")
+	pattern := path.Join(pathFlag, today, "box.lbproxy/*/td.var.log.cboxredirectd.cboxredirectd_http.log")
 	metrics := parse(pattern, uniqUsersMetric, syncDistrMetric, countryMetric, appsMetrics)
 	// analyze revad logs
 	userCreated := revad.NewUserCreated()
 	uniqWeb := revad.NewUniqUsers()
-	pattern = path.Join("/data/log/", today, "box.*/*/td.var.log.revad.revad_app.log")
+	pattern = path.Join(pathFlag, today, "box.*/*/td.var.log.revad.revad_app.log")
 	metrics = append(metrics, parse(pattern, userCreated, uniqWeb)...)
 
 	// analyze samba logs
 	uniqSamba := samba.NewUniqUsers()
-	pattern = path.Join("/data/log/", today, "box.samba*/*/td.var.log.samba.smbclients.log")
+	pattern = path.Join(pathFlag, today, "box.samba*/*/td.var.log.samba.smbclients.log")
 	metrics = append(metrics, parse(pattern, uniqSamba)...)
 
 	// send to carbon
